@@ -20,6 +20,7 @@ package org.apache.drill.exec.rpc.user;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.Preconditions;
@@ -54,6 +55,7 @@ public class UserSession {
   private Map<String, String> properties;
   private OptionManager sessionOptions;
   private final AtomicInteger queryCount;
+  private final String sessionId;
 
   /**
    * Implementations of this interface are allowed to increment queryCount.
@@ -115,6 +117,7 @@ public class UserSession {
 
   private UserSession() {
     queryCount = new AtomicInteger(0);
+    sessionId = UUID.randomUUID().toString();
   }
 
   public boolean isSupportComplexTypes() {
@@ -158,6 +161,10 @@ public class UserSession {
 
   public int getQueryCount() {
     return queryCount.get();
+  }
+
+  public String getSessionId() {
+    return sessionId;
   }
 
   /**
