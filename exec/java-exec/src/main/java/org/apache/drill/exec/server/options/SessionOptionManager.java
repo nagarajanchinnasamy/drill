@@ -25,7 +25,6 @@ import org.apache.drill.exec.rpc.user.UserSession;
 import org.apache.drill.exec.server.options.OptionValue.OptionType;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -85,7 +84,7 @@ public class SessionOptionManager extends InMemoryOptionManager {
     }
     return true;
   }
-  
+
   @Override
   OptionValue getLocalOption(final String name) {
     final OptionValue value = super.getLocalOption(name);

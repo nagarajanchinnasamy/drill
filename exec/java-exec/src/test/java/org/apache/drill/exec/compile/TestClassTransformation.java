@@ -45,7 +45,7 @@ public class TestClassTransformation extends BaseTestQuery {
   @BeforeClass
   public static void beforeTestClassTransformation() throws Exception {
     final UserSession userSession = UserSession.Builder.newBuilder()
-      .withOptionManager(getDrillbitContext().getOptionManager(), null)
+      .withOptionManager(getDrillbitContext().getOptionManager())
       .build();
     sessionOptions = (SessionOptionManager) userSession.getOptions();
   }

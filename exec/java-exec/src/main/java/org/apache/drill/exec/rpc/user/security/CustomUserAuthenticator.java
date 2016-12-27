@@ -33,7 +33,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 /**
  * Implement {@link org.apache.drill.exec.rpc.user.security.UserAuthenticator} to connect to obtain a session id
  * from an external system and set it as a session option for further use by UDFs
- * 
  */
 @UserAuthenticatorTemplate(type = "customAuthenticator")
 public class CustomUserAuthenticator implements UserAuthenticator {
@@ -82,7 +81,7 @@ public class CustomUserAuthenticator implements UserAuthenticator {
 
     try {
       response = httpClient.execute(httpPost);
-      sessionId = response.getLastHeader(sessionIdHeader).getValue();    
+      sessionId = response.getLastHeader(sessionIdHeader).getValue();
     } catch(Exception ex) {
         throw new UserAuthenticationException(String.format("Authentication of '%s' failed.", user));
     }

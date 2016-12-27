@@ -33,7 +33,6 @@ public class UserContextHandlerImpl implements UserContextHandler {
    */
   @Override
   public void setup(final DrillConfig drillConfig) throws DrillbitStartupException {
-    
   };
 
   /**
@@ -51,6 +50,5 @@ public class UserContextHandlerImpl implements UserContextHandler {
    */
   @Override
   public void close() throws IOException {
-	  
   }
 }

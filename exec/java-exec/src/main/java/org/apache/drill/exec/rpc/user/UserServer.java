@@ -1,4 +1,5 @@
 /**
+
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -379,7 +380,7 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
           connection.setUser(inbound);
           if (userContextHandler != null) {
               try {
-                userContextHandler.load(authenticatorOptions, "connection.getSession().getSessionId()");
+                userContextHandler.load(authenticatorOptions, connection.getSession().getSessionId());
               } catch (UserContextHandlingException ex) {
                 return handleFailure(respBuilder, HandshakeStatus.AUTH_FAILED, ex.getMessage(), ex);
               }
@@ -431,7 +432,7 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
         authenticator.close();
       }
       if (userContextHandler != null) {
-    	  userContextHandler.close();
+        userContextHandler.close();
       }
     } catch (Exception e) {
       logger.warn("Failure closing authenticator.", e);
