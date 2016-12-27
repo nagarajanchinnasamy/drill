@@ -17,39 +17,40 @@
  */
 package org.apache.drill.exec.rpc.user.security;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.drill.common.config.DrillConfig;
 import org.apache.drill.exec.exception.DrillbitStartupException;
 import org.apache.drill.exec.server.options.OptionValue;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
 /**
- * Interface to provide various username/password based implementations for authentication.
+ * Interface to handle user session context values of an external system.
  */
-public interface UserAuthenticator extends Closeable {
+public class UserContextHandlerImpl implements UserContextHandler {
 
   /**
-   * Setup for authenticating user credentials.
+   * Setup to load context values from external system.
    */
-  public void setup(DrillConfig drillConfig) throws DrillbitStartupException;
+  @Override
+  public void setup(final DrillConfig drillConfig) throws DrillbitStartupException {
+    
+  };
 
   /**
-   * Authenticate the given <i>user</i> and <i>password</i> combination.
-   *
-   * @param user
-   * @param password
-   * @return session local options - List of OptionValue that will be set as session local options
-   * @throws UserAuthenticationException if authentication fails for given user and password.
+   * Load context values from external system.
    */
-  public List<OptionValue> authenticate(String user, String password) throws UserAuthenticationException;
+  @Override
+  public void load(final List<OptionValue> authenticatorOptions, final String sessionId) throws UserContextHandlingException {
+    return;
+  };
 
   /**
-   * Close the authenticator. Used to release resources. Ex. LDAP authenticator opens connections to LDAP server,
-   * such connections resources are released in a safe manner as part of close.
+   * Close the handler. Used to release resources.
    *
    * @throws IOException
    */
   @Override
-  void close() throws IOException;
+  public void close() throws IOException {
+	  
+  }
 }

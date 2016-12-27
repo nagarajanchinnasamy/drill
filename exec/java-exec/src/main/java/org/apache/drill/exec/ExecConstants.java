@@ -93,6 +93,8 @@ public interface ExecConstants {
   String IMPERSONATION_MAX_CHAINED_USER_HOPS = "drill.exec.impersonation.max_chained_user_hops";
   String USER_AUTHENTICATION_ENABLED = "drill.exec.security.user.auth.enabled";
   String USER_AUTHENTICATOR_IMPL = "drill.exec.security.user.auth.impl";
+  String USER_CONTEXT_HANDLING_ENABLED = "drill.exec.security.user.auth.context_handling_enabled";
+  String USER_CONTEXT_HANDLER_IMPL = "drill.exec.security.user.auth.context_handler_impl";
   String PAM_AUTHENTICATOR_PROFILES = "drill.exec.security.user.auth.pam_profiles";
   /** Size of JDBC batch queue (in batches) above which throttling begins. */
   String JDBC_BATCH_QUEUE_THROTTLING_THRESHOLD =

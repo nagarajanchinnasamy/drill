@@ -19,6 +19,7 @@ package org.apache.drill.exec.rpc.user;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
@@ -58,6 +59,10 @@ import org.apache.drill.exec.rpc.user.UserServer.UserClientConnectionImpl;
 import org.apache.drill.exec.rpc.user.security.UserAuthenticationException;
 import org.apache.drill.exec.rpc.user.security.UserAuthenticator;
 import org.apache.drill.exec.rpc.user.security.UserAuthenticatorFactory;
+import org.apache.drill.exec.rpc.user.security.UserContextHandler;
+import org.apache.drill.exec.rpc.user.security.UserContextHandlerFactory;
+import org.apache.drill.exec.rpc.user.security.UserContextHandlingException;
+import org.apache.drill.exec.server.options.OptionValue;
 import org.apache.drill.exec.work.user.UserWorker;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -77,6 +82,7 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
   final UserWorker worker;
   final BufferAllocator alloc;
   final UserAuthenticator authenticator;
+  final UserContextHandler userContextHandler;
   final InboundImpersonationManager impersonationManager;
 
   public UserServer(DrillConfig config, ScanResult classpathScan, BufferAllocator alloc, EventLoopGroup eventLoopGroup,
@@ -92,6 +98,12 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
     } else {
       authenticator = null;
     }
+    if (config.getBoolean(ExecConstants.USER_CONTEXT_HANDLING_ENABLED)) {
+      userContextHandler = UserContextHandlerFactory.createHandler(config, classpathScan);
+    } else {
+      userContextHandler = null;
+    }
+
     if (config.getBoolean(ExecConstants.IMPERSONATION_ENABLED)) {
       impersonationManager = new InboundImpersonationManager();
     } else {
@@ -347,6 +359,7 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
             return handleFailure(respBuilder, HandshakeStatus.RPC_VERSION_MISMATCH, errMsg, null);
           }
 
+          List<OptionValue> authenticatorOptions = null;
           if (authenticator != null) {
             try {
               String password = "";
@@ -358,13 +371,19 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
                   break;
                 }
               }
-              authenticator.authenticate(inbound.getCredentials().getUserName(), password);
+              authenticatorOptions = authenticator.authenticate(inbound.getCredentials().getUserName(), password);
             } catch (UserAuthenticationException ex) {
               return handleFailure(respBuilder, HandshakeStatus.AUTH_FAILED, ex.getMessage(), ex);
             }
           }
-
           connection.setUser(inbound);
+          if (userContextHandler != null) {
+              try {
+                userContextHandler.load(authenticatorOptions, "connection.getSession().getSessionId()");
+              } catch (UserContextHandlingException ex) {
+                return handleFailure(respBuilder, HandshakeStatus.AUTH_FAILED, ex.getMessage(), ex);
+              }
+            }
           return respBuilder.setStatus(HandshakeStatus.SUCCESS).build();
         } catch (Exception e) {
           return handleFailure(respBuilder, HandshakeStatus.UNKNOWN_FAILURE, e.getMessage(), e);
@@ -410,6 +429,9 @@ public class UserServer extends BasicServer<RpcType, UserClientConnectionImpl> {
     try {
       if (authenticator != null) {
         authenticator.close();
+      }
+      if (userContextHandler != null) {
+    	  userContextHandler.close();
       }
     } catch (Exception e) {
       logger.warn("Failure closing authenticator.", e);

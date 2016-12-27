@@ -82,7 +82,7 @@ public class PlanningBase extends ExecTest{
     final LogicalPlanPersistence logicalPlanPersistence = new LogicalPlanPersistence(config, scanResult);
     final SystemOptionManager systemOptions = new SystemOptionManager(logicalPlanPersistence , provider);
     systemOptions.init();
-    final UserSession userSession = UserSession.Builder.newBuilder().withOptionManager(systemOptions).build();
+    final UserSession userSession = UserSession.Builder.newBuilder().withOptionManager(systemOptions, null).build();
     final SessionOptionManager sessionOptions = (SessionOptionManager) userSession.getOptions();
     final QueryOptionManager queryOptions = new QueryOptionManager(sessionOptions);
     final ExecutionControls executionControls = new ExecutionControls(queryOptions, DrillbitEndpoint.getDefaultInstance());

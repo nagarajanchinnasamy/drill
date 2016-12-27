@@ -23,10 +23,12 @@ import org.apache.drill.exec.exception.DrillbitStartupException;
 import org.apache.drill.exec.rpc.user.security.UserAuthenticationException;
 import org.apache.drill.exec.rpc.user.security.UserAuthenticator;
 import org.apache.drill.exec.rpc.user.security.UserAuthenticatorTemplate;
+import org.apache.drill.exec.server.options.OptionValue;
 import org.apache.drill.exec.util.ImpersonationUtil;
 import org.apache.hadoop.security.UserGroupInformation;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.apache.drill.exec.impersonation.TestInboundImpersonation.PROXY_NAME;
 import static org.apache.drill.exec.impersonation.TestInboundImpersonation.PROXY_PASSWORD;
@@ -67,11 +69,11 @@ public class UserAuthenticatorTestImpl implements UserAuthenticator {
   }
 
   @Override
-  public void authenticate(String user, String password) throws UserAuthenticationException {
+  public List<OptionValue> authenticate(String user, String password) throws UserAuthenticationException {
 
     if ("anonymous".equals(user)) {
       // Allow user "anonymous" for test framework to work.
-      return;
+      return null;
     }
 
     if (
@@ -90,6 +92,8 @@ public class UserAuthenticatorTestImpl implements UserAuthenticator {
         !(PROXY_NAME.equals(user) && PROXY_PASSWORD.equals(password))) {
       throw new UserAuthenticationException();
     }
+
+    return null;
   }
 
   @Override

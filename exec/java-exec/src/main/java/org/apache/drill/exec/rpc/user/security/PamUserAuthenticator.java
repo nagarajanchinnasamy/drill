@@ -22,6 +22,7 @@ import org.apache.drill.common.config.DrillConfig;
 import org.apache.drill.common.exceptions.DrillRuntimeException;
 import org.apache.drill.exec.ExecConstants;
 import org.apache.drill.exec.exception.DrillbitStartupException;
+import org.apache.drill.exec.server.options.OptionValue;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,13 +56,14 @@ public class PamUserAuthenticator implements UserAuthenticator {
   }
 
   @Override
-  public void authenticate(String user, String password) throws UserAuthenticationException {
+  public List<OptionValue> authenticate(String user, String password) throws UserAuthenticationException {
     for (String pamProfile : profiles) {
       Pam pam = new Pam(pamProfile);
       if (!pam.authenticateSuccessful(user, password)) {
         throw new UserAuthenticationException(String.format("PAM profile '%s' validation failed", pamProfile));
       }
     }
+    return null;
   }
 
   @Override

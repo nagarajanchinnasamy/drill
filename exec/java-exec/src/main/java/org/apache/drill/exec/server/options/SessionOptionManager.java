@@ -20,12 +20,12 @@ package org.apache.drill.exec.server.options;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.drill.common.exceptions.UserException;
 import org.apache.drill.common.map.CaseInsensitiveMap;
 import org.apache.drill.exec.rpc.user.UserSession;
 import org.apache.drill.exec.server.options.OptionValue.OptionType;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,6 +72,20 @@ public class SessionOptionManager extends InMemoryOptionManager {
     return true;
   }
 
+  public boolean setLocalOption(final OptionValue value, final int ttl) {
+    final boolean set = super.setLocalOption(value);
+    if (!set) {
+      return false;
+    }
+    final String name = value.name;
+    if (ttl > 0) {
+      final int start = session.getQueryCount() + 1; // start from the next query
+      final int end = start + ttl;
+      shortLivedOptions.put(name, new ImmutablePair<>(start, end));
+    }
+    return true;
+  }
+  
   @Override
   OptionValue getLocalOption(final String name) {
     final OptionValue value = super.getLocalOption(name);
